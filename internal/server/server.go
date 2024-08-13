@@ -13,17 +13,24 @@ const pkgName = "server"
 type Server struct {
 	lg     *slog.Logger
 	server *http.Server
+
+	db DB
 }
 
-func New(lg *slog.Logger, addr string) *Server {
+func New(lg *slog.Logger, addr string, db DB) *Server {
 	s := Server{
 		lg: lg.WithGroup(pkgName),
+		db: db,
 	}
 
 	r := chi.NewRouter()
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
 			r.Get("/time", s.getTimeHandler)
+
+			r.Route("/person", func(r chi.Router) {
+				r.Post("/add", s.addPersonHandler)
+			})
 		})
 	})
 
