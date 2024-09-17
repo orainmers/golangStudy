@@ -4,10 +4,10 @@ import (
 	"sync"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/orainmers/golangStudy/internal/app"
 	"github.com/orainmers/golangStudy/internal/logger"
 	"github.com/orainmers/golangStudy/internal/server"
-	"github.com/orainmers/golangStudy/internal/store"
+	"github.com/orainmers/golangStudy/internal/service"
+	"github.com/orainmers/golangStudy/internal/storage"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 func main() {
 	lg := logger.New()
 
-	psql, err := store.New(lg, username, password, address, database)
+	psql, err := storage.New(lg, username, password, address, database)
 	if err != nil {
 		lg.Error("Failed to connect to database",
 			"error", err)
@@ -40,7 +40,7 @@ func main() {
 		return
 	}
 
-	application := app.New(lg, psql)
+	application := service.New(lg, psql)
 
 	httpServer := server.New(lg, ":8080", application)
 

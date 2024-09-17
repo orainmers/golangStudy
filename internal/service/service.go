@@ -1,4 +1,4 @@
-package app
+package service
 
 import (
 	"fmt"
@@ -9,10 +9,10 @@ import (
 	"github.com/orainmers/golangStudy/internal/models"
 )
 
-const moduleName = "app"
+const moduleName = "service"
 
 type store interface {
-	AddPerson(person *models.Person) error
+	AddPerson(person *models.Person) (uuid.UUID, error)
 }
 
 type App struct {
@@ -27,7 +27,7 @@ func New(lg *slog.Logger, store store) *App {
 	}
 }
 
-func (a *App) CreatePerson(person *models.Person) error {
+func (a *App) CreatePerson(person *models.Person) (uuid.UUID, error) {
 	person.ID = uuid.New()
 
 	t := time.Now()
@@ -35,9 +35,10 @@ func (a *App) CreatePerson(person *models.Person) error {
 	person.UpdatedAt = t
 	person.IsDeleted = false
 
-	if err := a.store.AddPerson(person); err != nil {
-		return fmt.Errorf("a.store.AddPerson(...): %v", err)
+	id, err := a.store.AddPerson(person)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("a.storage.AddPerson(...): %v", err)
 	}
 
-	return nil
+	return id, nil
 }

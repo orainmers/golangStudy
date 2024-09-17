@@ -1,4 +1,4 @@
-package store
+package storage
 
 import (
 	"database/sql"
@@ -6,10 +6,11 @@ import (
 	"log/slog"
 	"net/url"
 
+	"github.com/google/uuid"
 	"github.com/orainmers/golangStudy/internal/models"
 )
 
-const moduleName = "store"
+const moduleName = "storage"
 
 type Store struct {
 	lg *slog.Logger
@@ -69,7 +70,7 @@ func (s *Store) DummyMigration() error {
 	return nil
 }
 
-func (s *Store) AddPerson(person *models.Person) error {
+func (s *Store) AddPerson(person *models.Person) (uuid.UUID, error) {
 	query := `INSERT INTO people (id, name, description, created_at, updated_at, is_deleted)
 VALUES ($1, $2, $3, $4, $5, $6);`
 
@@ -82,8 +83,8 @@ VALUES ($1, $2, $3, $4, $5, $6);`
 		person.UpdatedAt,
 		person.IsDeleted,
 	); err != nil {
-		return fmt.Errorf("s.db.Exec(...): %v", err)
+		return uuid.Nil, fmt.Errorf("s.db.Exec(...): %v", err)
 	}
 
-	return nil
+	return person.ID, nil
 }

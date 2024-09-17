@@ -14,13 +14,13 @@ type Server struct {
 	lg     *slog.Logger
 	server *http.Server
 
-	app app
+	service service
 }
 
-func New(lg *slog.Logger, addr string, app app) *Server {
+func New(lg *slog.Logger, addr string, app service) *Server {
 	s := Server{
-		lg:  lg.WithGroup(pkgName),
-		app: app,
+		lg:      lg.WithGroup(pkgName),
+		service: app,
 	}
 
 	r := chi.NewRouter()

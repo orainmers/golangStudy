@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/orainmers/golangStudy/internal/models"
 )
 
-type app interface {
-	CreatePerson(person *models.Person) error
+type service interface {
+	CreatePerson(person *models.Person) (uuid.UUID, error)
 }
 
 func (s *Server) getTimeHandler(w http.ResponseWriter, _ *http.Request) {
@@ -42,13 +43,20 @@ func (s *Server) addPersonHandler(w http.ResponseWriter, r *http.Request) {
 		Description: req.Description,
 	}
 
-	if err := s.app.CreatePerson(&person); err != nil {
+	id, err := s.service.CreatePerson(&person)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		if errEncoder := json.NewEncoder(w).Encode(err.Error()); errEncoder != nil {
 			s.lg.Warn("addPersonHandler(...)", "error", errEncoder)
 
 			return
 		}
+	}
+
+	if errEncoder := json.NewEncoder(w).Encode(id); errEncoder != nil {
+		s.lg.Warn("addPersonHandler(...)", "error", errEncoder)
+
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
