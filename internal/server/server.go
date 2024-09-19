@@ -14,10 +14,10 @@ type Server struct {
 	lg     *slog.Logger
 	server *http.Server
 
-	app app
+	app service
 }
 
-func New(lg *slog.Logger, addr string, app app) *Server {
+func New(lg *slog.Logger, addr string, app service) *Server {
 	s := Server{
 		lg:  lg.WithGroup(pkgName),
 		app: app,

@@ -8,8 +8,8 @@ import (
 	"github.com/orainmers/golangStudy/internal/models"
 )
 
-type app interface {
-	CreatePerson(person *models.Person) error
+type service interface {
+	CreatePerson(person *models.Contact) error
 }
 
 func (s *Server) getTimeHandler(w http.ResponseWriter, _ *http.Request) {
@@ -23,10 +23,10 @@ func (s *Server) getTimeHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func (s *Server) addPersonHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) addContactHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var req models.PersonRequest
+	var req models.ContactRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -37,7 +37,7 @@ func (s *Server) addPersonHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	person := models.Person{
+	person := models.Contact{
 		Name:        req.Name,
 		Description: req.Description,
 	}
